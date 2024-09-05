@@ -58,3 +58,11 @@ Once the MOK is enrolled and the signmod is also installed, you can use the sign
 sudo signmod your_module.ko
 ```
 Replace your_module.ko with the your kernel module file. This command will sign the module using the MOK key, allowing it to be loaded by the kernel on systems with Secure Boot enabled.
+
+## Known Issue
+
+After doing all the set up, if face with `insmod: ERROR: could not insert module hello.ko: Invalid module format` error, reinstall the headers and re comple the kernel module.
+
+```bash
+sudo apt --reinstall install linux-headers-`uname -r`
+```
