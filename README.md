@@ -18,7 +18,7 @@ This repository contains a script to generate a new private key and self-signed 
 
 1. **Clone the Repository**:  
    ```bash
-   git clone https://github.com/yourusername/secure-boot-toolkit.git && cd secure-boot-toolkit
+   git clone https://github.com/cipherswami/regMOK.git && cd regMOK
    ```
 
 2. **Install MOK (also installs signmod)**:  
@@ -26,6 +26,8 @@ This repository contains a script to generate a new private key and self-signed 
     **!! Important Note !!**  
     **Avoid Running the `install_MOK.sh` Script Multiple Times**  
     Running the `install_MOK.sh` script more than once will generate new keys and certificates, overwriting the existing ones on your system. This will result in new keys being added to the MOK database while the old keys become cluttered and unused. **TLDR; Run the script only once**.  
+
+    set some password if prompeted any, which will be later used for enrolling MOK.
 
     ```bash
     chmod +x install_MOK.sh && sudo ./install_MOK.sh
