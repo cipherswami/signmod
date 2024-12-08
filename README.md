@@ -1,18 +1,16 @@
-# Kernel Developer Secure Boot Toolkit
+# regMOK::CIPH3R
 
-This repository contains a script to generate a new private key and self-signed certificate for signing kernel modules using Machine Owner Key (MOK). Additionally, it installs the `signmod` script to streamline the module signing process.
+regMOK helps signing custom kernel modules by generating a key and certificate, then enrolling the key in the MOK list for Secure Boot. It then installs the `signmod` script to sign modules with the generated certificate, enabling verification by MOK during boot.
 
-## Key Components:
+### Key Components:
 
-1. **MOK (Machine Owner Key) Installer:**
-   - Generates a custom key and certificate later on used for signing your kernel modules.
-   - Registers and enrolls the key with Secure Boot, allowing your custom modules to be loaded safely.
+1. **MOK (Machine Owner Key) Enroller:**
+   - Automatically generates a **custom key** and corresponding **certificate** pair.
+   - Enrolls the **key** into the Machine Owner Key (MOK) list for use with Secure Boot.
 
-2. **Signmod Script:**
-   - Installs a script called `signmod`, which automates the process of signing kernel modules using your enrolled MOK.
-
-
-
+2. **Module Signing Script:**
+   - Installs a utility script named `signmod` to streamline the signing process.
+   - This script uses the generated certificate to sign kernel modules, allowing them to be verified against the enrolled MOK during system boot.
 
 ## Installation
 
