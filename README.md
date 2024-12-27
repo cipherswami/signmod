@@ -1,45 +1,38 @@
-# regMOK::CIPH3R
+# SignMod::CIPH3R
 
-regMOK helps signing custom kernel modules by generating a key and certificate, then enrolling the key in the MOK list for Secure Boot. It then installs the `signmod` script to sign modules with the generated certificate, enabling verification by MOK during boot.
-
-### Key Components:
-
-1. **MOK (Machine Owner Key) Enroller:**
-   - Automatically generates a **custom key** and corresponding **certificate** pair.
-   - Enrolls the **key** into the Machine Owner Key (MOK) list for use with Secure Boot.
-
-2. **Module Signing Script:**
-   - Installs a utility script named `signmod` to streamline the signing process.
-   - This script uses the generated certificate to sign kernel modules, allowing them to be verified against the enrolled MOK during system boot.
+The **signmod** script streamlines the process of signing custom kernel modules for systems with Secure Boot enabled. The installation script generates a key pair, enrolls the certificate in the MOK, and the corresponding private key is later used by signmod to sign the modules, enabling secure and seamless module loading.
 
 ## Installation
 
 1. **Clone the Repository**:  
    ```bash
-   git clone https://github.com/cipherswami/regMOK.git && cd regMOK
+   git clone https://github.com/cipherswami/signmod.git && cd signmod
    ```
 
-2. **Install MOK (also installs signmod)**:  
+2. **Install signmod**:  
    
     **!! Important Note !!**  
-    **Avoid Running the `install_MOK.sh` Script Multiple Times**  
-    Running the `install_MOK.sh` script more than once will generate new keys and certificates, overwriting the existing ones on your system. This will result in new keys being added to the MOK database while the old keys become cluttered and unused. **TLDR; Run the script only once**.  
 
-    set some password if prompeted any, which will be later used for enrolling MOK.
+    Running the `install_signmod.sh` script more than once will generate new keys and certificates, overwriting the existing ones on your system. This will result in new keys being added to the MOK database while the old keys become cluttered and unused.  
+
+    **TL;DR**: _Run the installation script only once_.   
+    
+    During installation if prompted to set a password, set something later it will be asked during MOK enrollment after the reboot.
 
     ```bash
-    chmod +x install_MOK.sh && sudo ./install_MOK.sh
+    chmod +x install_signmod.sh && sudo ./install_signmod.sh
     ```
 
-3. **Reboot and enroll MOK**:  
-    ```bash
-    reboot
-    ```
-    During the next boot, when prompted by the MOK Manager, follow these steps:
+3. **Reboot and key enrollment in MOK**:  
+
+    Reboot your PC, during the next boot when prompted by the MOK Manager, follow these steps:
     - Select Enroll MOK.
     - Continue by selecting View Key and confirm the enrollment.
     - Provide the password you set during the MOK registration (if prompted).
-    - Finish the process and reboot again to complete the key enrollment.
+    - Finish the process, and continue to boot.
+    ```bash
+    sudo reboot now
+    ```
 
 4. **Verify MOK Installation**:  
 
@@ -51,16 +44,17 @@ regMOK helps signing custom kernel modules by generating a key and certificate, 
 
 ## Usage (Signing Kernel Modules)
 
-Once the MOK is enrolled and the signmod is also installed, you can use the signmod to sign your kernel modules:
+Once the certificate is enrolled in MOK, and the signmod installed, you can use the signmod to sign your kernel modules:
 ```bash
 sudo signmod your_module.ko
 ```
-Replace your_module.ko with the your kernel module file. This command will sign the module using the MOK key, allowing it to be loaded by the kernel on systems with Secure Boot enabled.
+This script will sign the module using the corresponding private key generated during installation, enabling it to be loaded by the kernel on Secure Boot enabled systems.
 
 ## Known Issue
 
-After doing all the set up, if face with `insmod: ERROR: could not insert module hello.ko: Invalid module format` error, reinstall the headers and re comple the kernel module.
+If you encounter the `insmod: ERROR: could not insert module hello.ko: Invalid module format` error after completing the setup, purge and reinstall the headers.
 
 ```bash
-sudo apt --reinstall install linux-headers-`uname -r`
+sudo apt purge -y linux-headers-$(uname -r)
+sudo apt install -y linux-headers-$(uname -r)
 ```
