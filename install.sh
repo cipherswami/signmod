@@ -7,16 +7,28 @@ if [ "$(id -u)" -ne "0" ]; then
 fi
 
 # Variables
+SCRIPT_NAME="signmod"
 KEY_DIR="/etc/ssl/private"
 CERT_DIR="/etc/ssl/certs"
-PRIVATE_KEY="$KEY_DIR/MOK.priv"
-CERTIFICATE_DER="$CERT_DIR/MOK.der"
-CERTIFICATE_PEM="$CERT_DIR/MOK.pem"
+PRIVATE_KEY="$KEY_DIR/$SCRIPT_NAME.priv"
+CERTIFICATE_DER="$CERT_DIR/$SCRIPT_NAME.der"
+CERTIFICATE_PEM="$CERT_DIR/$SCRIPT_NAME.pem"
 KEY_SIZE=2048
 DAYS_VALID=3650
-CERT_SUBJECT="/C=IN/ST=AndhraPradesh/L=Visakhapatnam/O=fCoderSociety/OU=KernelDev/CN=KernelDevMods"
-SIGNMOD_SCRIPT="signmod"
-SIGNMOD_PATH="/usr/local/bin/$SIGNMOD_SCRIPT"
+CERT_SUBJECT="/C=IN/ST=AndhraPradesh/L=Visakhapatnam/O=fCoderSociety/OU=KernelDev/CN=signmod"
+SIGNMOD_SRC="src/$SCRIPT_NAME"
+SIGNMOD_DST="/usr/local/bin/$SCRIPT_NAME"
+
+# Function to display banner
+banner() {
+    clear
+    echo "##############################################################"
+    echo "#------------------------------------------------------------#"
+    echo "#                        signmod                             #"
+    echo "#------------------------------------------------------------#"
+    echo "################## Author: cipherswami #######################"
+    echo ""
+}
 
 # Function to install req packages
 install_packages() {
@@ -36,10 +48,7 @@ generate_keys() {
     # Convert DER to PEM format
     openssl x509 -in "$CERTIFICATE_DER" -out "$CERTIFICATE_PEM" -outform PEM || { echo "[!] Failed to convert DER to PEM"; exit 1; }
     echo ""
-}
 
-# Function to set appropriate permissions
-set_permissions() {
     echo "[#] Setting permissions..."
 
     chmod 600 "$PRIVATE_KEY" || { echo "[!] Failed to set permissions for private key"; exit 1; }
@@ -60,34 +69,31 @@ register_mok() {
 }
 
 # Function to install the signmod script
-install_signmod_script() {
-    echo "[#] Installing signmod script to /usr/local/bin..."
+install_signmod() {
+    echo "[#] Installing signmod script ..."
 
     # Check if the signmod script exists in the current directory
-    if [ ! -f "$SIGNMOD_SCRIPT" ]; then
-        echo "[!] signmod script not found in the current directory."
+    if [ ! -f "$SIGNMOD_SRC" ]; then
+        echo "[!] $SCRIPT_NAME script not found"
         exit 1
     fi
 
     # Copy the script to /usr/local/bin and make it executable
-    cp "$SIGNMOD_SCRIPT" "$SIGNMOD_PATH" || { echo "[!] Failed to copy signmod script"; exit 1; }
-    chmod +x "$SIGNMOD_PATH" || { echo "[!] Failed to make signmod script executable"; exit 1; }
-    echo "[#] signmod script installed successfully at $SIGNMOD_PATH"
+    cp "$SIGNMOD_SRC" "$SIGNMOD_DST" || { echo "[!] Failed to copy signmod script"; exit 1; }
+    chmod +x "$SIGNMOD_DST" || { echo "[!] Failed to make signmod script executable"; exit 1; }
+    echo "[#] signmod script installed successfully at $SIGNMOD_DST"
     echo ""
 }
 
 # Main script execution
-echo "[#] Starting MOK installation..."
-echo ""
+banner
 install_packages
-#####################################
-#  Comment out this section if you  #
-#     only need install signmod     #
-#####################################
+##############################################################
+# Comment out this section if you dont need to generate and
+# register the keys with MOK
 generate_keys
-set_permissions
 register_mok
-####################################
-install_signmod_script
+##############################################################
+install_signmod
 
 echo "[#] MOK installation completed. Reboot your system to complete the key enrollment."

@@ -15,8 +15,8 @@ if [ "$#" -ne 1 ]; then
 fi
 
 MODULE_FILE="$1"
-PRIVATE_KEY="/etc/ssl/private/MOK.priv"
-CERTIFICATE="/etc/ssl/certs/MOK.pem"
+PRIVATE_KEY="/etc/ssl/private/signmod.priv"
+CERTIFICATE="/etc/ssl/certs/signmod.pem"
 SIGN_FILE_SCRIPT="/usr/src/linux-headers-$(uname -r)/scripts/sign-file"
 
 # Verify the existence of the module file
