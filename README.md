@@ -23,13 +23,15 @@ The **signmod** script streamlines the process of signing custom kernel modules 
     chmod +x install_signmod.sh && sudo ./install_signmod.sh
     ```
 
-3. **Reboot and key enrollment in MOK**:  
+3. **MOK enrollment**:  
 
     Reboot your PC, during the next boot when prompted by the MOK Manager, follow these steps:
+
     - Select Enroll MOK.
     - Continue by selecting View Key and confirm the enrollment.
     - Provide the password you set during the MOK registration (if prompted).
     - Finish the process, and continue to boot.
+
     ```bash
     sudo reboot now
     ```
@@ -37,9 +39,11 @@ The **signmod** script streamlines the process of signing custom kernel modules 
 4. **Verify MOK Installation**:  
 
     To confirm that your MOK certificate has been installed correctly
+
     ```bash
     sudo mokutil --list-enrolled
     ```
+
     Look for your certificate details (subject, issuer: kCN=KernelDevMods) in the output.
 
 ## Usage (Signing Kernel Modules)
