@@ -18,41 +18,37 @@
    sudo apt install -y linux-headers-$(uname -r)
    ```
 
-3. **Install signmod**:  
-   
-    Clone or download the repository:
+2. **Clone the repository**:  
 
     ```bash
     git clone https://github.com/cipherswami/signmod.git && cd signmod
     ```
 
-    Run the installer script:
+2. **Run the installer script**: 
 
-    > **!! Important Note !!** - Running the `install.sh` script more than once will generate new keys and certificates, overwriting the existing ones on your system. This will result in new keys being added to the MOK database while the old keys become cluttered and unused.  
-    > **TL;DR**: _Run the installation script only once_.   
-    
-    During installation, if prompted to set a password, choose one, as it will be required later during **MOK enrollment**.
+    During installation, if prompted to set a password, set one, as it will be required later during MOK enrollment:
 
     ```bash
     chmod +x install.sh && sudo ./install.sh
     ```
 
-1. **MOK enrollment**:  
+3. **Clean up and MOK enrollment**:  
 
-    Once the installation is complete, reboot your PC. During the next boot, follow the steps below when prompted by the MOK Manager: 
-
-    - Select **Enroll MOK**.
-    - Continue by selecting **View Key** and **confirm** the enrollment.
-    - Enter the same **password** you set during the installation.
-    - Once done continue to boot.
-
-    To reboot:
+    Once the installation is complete you can safly remove the cloned repository: 
 
     ```bash
-    sudo reboot now
+    cd .. && rm -rf signmod
     ```
 
-2. **Verify MOK**:  
+    Now reboot your PC. During the next boot, you will see a prompt from the MOK Manager. Follow these steps:  
+
+    - Press **any key** to enter the MOK Menu within the timeout.
+    - Select **Enroll MOK** from the menu.  
+    - Next, choose **Continue** and then **Yes**.   
+    - When prompted for a password, enter the same **password** you set during the installation.  
+    - Finally, select **Reboot** to complete the process.
+
+4. **Verification**:  
 
     To confirm that your signmod MOK certificate has been installed correctly
 
@@ -60,7 +56,7 @@
     sudo mokutil --list-enrolled
     ```
 
-    Look for your certificate details (subject, issuer: kCN=signmod) in the output.
+    Look for your certificate details (subject, issuer: `CN=signmod`) in the output.
 
 ## Usage
 
@@ -76,7 +72,7 @@ This script will sign the module using the corresponding private key generated d
 
 To remove `signmod` and clean up all associated files and certificates, follow the steps below:
 
-1. **Clone or download the repository**:
+1. **Clone the repository**:
 
     ```bash
     git clone https://github.com/cipherswami/signmod.git && cd signmod
@@ -84,19 +80,29 @@ To remove `signmod` and clean up all associated files and certificates, follow t
 
 2. **Run the uninstaller script**:  
 
+    During uninstallation, if prompted to set a password, set one, as it will be required later during MOK unenrollment:
+
     ```bash
     chmod +x uninstall.sh && sudo ./uninstall.sh
     ```
 
-2. **Reboot your system**:  
+3. **Clean up and MOK unenrollment**:  
 
-    After running the uninstallation script, a reboot is required to complete the removal of the MOK certificate. During the next boot, follow the steps below:
-    
-    - When prompted by the MOK Manager, select **Delete MOK**.
-    - Confirm your choice and follow the on-screen instructions.
-    - Enter the password you used during the initial MOK enrollment.
+    Once the uninstallation is complete you can safly remove the cloned repository. 
 
-3. **Verify uninstallation**:  
+    ```bash
+    cd .. && rm -rf signmod
+    ```
+
+    Now reboot your PC. During the next boot, you will see a prompt from the MOK Manager. Follow these steps: 
+
+    - Press **any key** to enter the MOK Menu within the timeout. 
+    - Select **Delete key** from the menu.  
+    - Next, choose **Continue** and then **Yes**.  
+    - When prompted for a password, enter the same **password** you set during the installation.  
+    - Finally, select **Reboot** to complete the process.
+
+5. **Verification**:  
 
     After rebooting, you can confirm the removal by running:
 

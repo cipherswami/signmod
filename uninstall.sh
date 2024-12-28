@@ -7,12 +7,10 @@ if [ "$(id -u)" -ne "0" ]; then
 fi
 
 # Variables
-SCRIPT_NAME="signmod"
-KEY_DIR="/etc/ssl/private"
-CERT_DIR="/etc/ssl/certs"
-PRIVATE_KEY="$KEY_DIR/$SCRIPT_NAME.priv"
-CERTIFICATE_DER="$CERT_DIR/$SCRIPT_NAME.der"
-CERTIFICATE_PEM="$CERT_DIR/$SCRIPT_NAME.pem"
+PRIVATE_KEY="/etc/ssl/private/signmod.priv"
+CERTIFICATE_DER="/etc/ssl/certs/signmod.der"
+CERTIFICATE_PEM="/etc/ssl/certs/signmod.pem"
+SIGNMOD_SRC="src/signmod"
 SIGNMOD_DST="/usr/local/bin/signmod"
 
 # Function to display banner
@@ -41,8 +39,14 @@ remove_signmod() {
 # Function to unregister the certificate from MOK
 unregister_mok() {
     echo "[#] Unregistering the certificate from MOK (reboot required) ..."
-    mokutil --delete "$CERTIFICATE_DER" || { echo "[!] Failed to unregister MOK"; exit 1; }
-    echo "[#] Certificate scheduled for removal. Reboot to complete the process."
+    echo ""
+    if [ -f "$CERTIFICATE_DER" ]; then
+        echo "[#] Set a password for MOK unenrollment, and use the same password during unenrollment after the reboot."
+        mokutil --delete "$CERTIFICATE_DER" || { echo "[!] Failed to unregister MOK"; exit 1; }
+        echo "[#] Certificate unregistered successfully."
+    else
+        echo "[#] Certificate file not found at $CERTIFICATE_DER. Skipping MOK unregistration."
+    fi
     echo ""
 }
 
@@ -60,5 +64,5 @@ remove_signmod
 unregister_mok
 remove_keys
 
-echo "[#] signmod uninstallation completed."
+echo "[#] signmod uninstallation completed. Reboot your system to complete the key unenrollment."
 echo ""

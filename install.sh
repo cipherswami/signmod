@@ -7,17 +7,14 @@ if [ "$(id -u)" -ne "0" ]; then
 fi
 
 # Variables
-SCRIPT_NAME="signmod"
-KEY_DIR="/etc/ssl/private"
-CERT_DIR="/etc/ssl/certs"
-PRIVATE_KEY="$KEY_DIR/$SCRIPT_NAME.priv"
-CERTIFICATE_DER="$CERT_DIR/$SCRIPT_NAME.der"
-CERTIFICATE_PEM="$CERT_DIR/$SCRIPT_NAME.pem"
+PRIVATE_KEY="/etc/ssl/private/signmod.priv"
+CERTIFICATE_DER="/etc/ssl/certs/signmod.der"
+CERTIFICATE_PEM="/etc/ssl/certs/signmod.pem"
+SIGNMOD_SRC="src/signmod"
+SIGNMOD_DST="/usr/local/bin/signmod"
 KEY_SIZE=2048
 DAYS_VALID=3650
-CERT_SUBJECT="/C=IN/ST=AndhraPradesh/L=Visakhapatnam/O=fCoderSociety/OU=KernelDev/CN=signmod"
-SIGNMOD_SRC="src/$SCRIPT_NAME"
-SIGNMOD_DST="/usr/local/bin/$SCRIPT_NAME"
+CERT_SUBJECT="/C=IN/ST=AndhraPradesh/L=Visakhapatnam/O=fCoderSociety/CN=signmod"
 
 # Function to display banner
 banner() {
@@ -60,13 +57,22 @@ generate_keys() {
 
 # Function to register the certificate with MOK
 register_mok() {
-    echo "[#] Registering the certificate with MOK..."
-    mokutil --import "$CERTIFICATE_DER" || { echo "[!] Failed to register certificate with MOK"; exit 1; }
+    echo "[#] Registering the certificate with MOK (reboot required) ..."
+    echo ""
 
-    echo "[#] A reboot is required to enroll the key. Please follow the prompts during boot to complete the enrollment."
-    echo "Press Enter to continue..."
-    read
+    # Check if certificate exists or not
+    if [ ! -f "$CERTIFICATE_DER" ]; then
+        echo "[#] Certificate file not found at $CERTIFICATE_DER."
+        exit 1
+    fi
+
+    # Installing certificate in MOK
+    echo "[#] Set a password for MOK enrollment now, and use the same password during enrollment after the reboot."
+    mokutil --import "$CERTIFICATE_DER" || { echo "[!] Failed to register certificate with MOK"; exit 1; }
+    echo "[#] Certificate registered successfully."
+    echo ""
 }
+
 
 # Function to install the signmod script
 install_signmod() {
@@ -74,7 +80,7 @@ install_signmod() {
 
     # Check if the signmod script exists in the current directory
     if [ ! -f "$SIGNMOD_SRC" ]; then
-        echo "[!] $SCRIPT_NAME script not found"
+        echo "[!] signmod script not found"
         exit 1
     fi
 
@@ -88,12 +94,12 @@ install_signmod() {
 # Main script execution
 banner
 install_packages
-##############################################################
-# Comment out this section if you dont need to generate and
-# register the keys with MOK
+########################################################################################
+# Comment out this section if you dont need to generate and register the keys with MOK
 generate_keys
 register_mok
-##############################################################
+########################################################################################
 install_signmod
 
-echo "[#] MOK installation completed. Reboot your system to complete the key enrollment."
+echo "[#] signmod installation completed. Reboot your system to complete the key enrollment."
+echo ""
