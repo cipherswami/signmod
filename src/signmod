@@ -43,7 +43,6 @@ if [ ! -f "$SIGN_FILE_SCRIPT" ]; then
 fi
 
 # Sign the module
-echo "[#] Signing module '$MODULE_FILE'..."
 "$SIGN_FILE_SCRIPT" sha256 "$PRIVATE_KEY" "$CERTIFICATE" "$MODULE_FILE"
 
 # Check if signing was successful
